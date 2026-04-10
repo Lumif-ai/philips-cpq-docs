@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Philips CPQ - Pricing Rules Reference v2.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brand: #E94D35;
+    --brand-light: rgba(233,77,53,0.08);
+    --text-primary: #121212;
+    --text-secondary: #6B7280;
+    --text-muted: #9CA3AF;
+    --bg-white: #FFFFFF;
+    --bg-warm: #FFF8F6;
+    --bg-subtle: #FAFAFA;
+    --border: #E5E7EB;
+    --success: #22C55E;
+    --success-bg: rgba(34,197,94,0.08);
+    --info: #3B82F6;
+    --info-bg: rgba(59,130,246,0.08);
+    --warning: #F97316;
+    --warning-bg: rgba(249,115,22,0.08);
+    --danger: #EF4444;
+    --danger-bg: rgba(239,68,68,0.08);
+    --purple: #A855F7;
+    --purple-bg: rgba(168,85,247,0.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; color: var(--text-primary); background: var(--bg-white); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 32px; }
+
+  /* Header */
+  .header { background: var(--bg-white); border-bottom: 1px solid var(--border); padding: 32px 0; margin-bottom: 48px; }
+  .header-inner { display: flex; justify-content: space-between; align-items: flex-start; }
+  .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .header .subtitle { font-size: 15px; color: var(--text-secondary); }
+  .version-badge { display: inline-flex; align-items: center; background: var(--brand-light); color: var(--brand); font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 9999px; margin-top: 6px; }
+
+  /* Sections */
+  .section { margin-bottom: 56px; }
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid var(--brand); }
+  .section-number { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: var(--brand); color: white; font-size: 14px; font-weight: 700; border-radius: 8px; flex-shrink: 0; }
+  .section-title { font-size: 22px; font-weight: 700; }
+
+  /* Dashboard */
+  .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+  .dash-card { background: var(--bg-white); border: 1px solid var(--border); border-radius: 12px; padding: 20px; display: flex; align-items: flex-start; gap: 14px; }
+  .dash-card .icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .dash-card .label { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; margin-bottom: 2px; }
+  .dash-card .value { font-size: 24px; font-weight: 700; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead th { background: var(--bg-subtle); color: var(--text-secondary); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  tbody td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tbody tr:hover { background: var(--bg-warm); }
+  tbody tr:last-child td { border-bottom: none; }
+
+  /* Badges */
+  .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 9999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .badge-green { background: var(--success-bg); color: var(--success); }
+  .badge-blue { background: var(--info-bg); color: var(--info); }
+  .badge-orange { background: var(--warning-bg); color: var(--warning); }
+  .badge-red { background: var(--danger-bg); color: var(--danger); }
+  .badge-purple { background: var(--purple-bg); color: var(--purple); }
+  .badge-gray { background: var(--bg-subtle); color: var(--text-secondary); }
+
+  /* Rule Cards */
+  .rule-card { background: var(--bg-white); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 24px; overflow: hidden; }
+  .rule-card-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); }
+  .rule-card-header h3 { font-size: 18px; font-weight: 700; }
+  .rule-card-header .rule-id { font-size: 13px; color: var(--text-muted); font-weight: 500; margin-left: 10px; }
+  .rule-card-body { padding: 24px; }
+  .rule-oneliner { font-size: 15px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6; }
+  .formula-box { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 14px; margin-bottom: 20px; line-height: 1.7; }
+  .formula-box .formula-label { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 6px; display: block; }
+  .example-box { background: var(--bg-warm); border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+  .example-box .example-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--brand); margin-bottom: 10px; display: block; }
+  .example-box .example-setup { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.6; }
+  .example-steps { list-style: none; padding: 0; }
+  .example-steps li { font-size: 14px; padding: 6px 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .example-steps li .step-date { font-weight: 600; min-width: 90px; flex-shrink: 0; }
+  .example-steps li .step-calc { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; color: var(--text-secondary); }
+  .example-steps li .step-result { font-weight: 700; color: var(--brand); }
+  .differentiator { background: var(--info-bg); border-radius: 8px; padding: 14px 18px; font-size: 14px; color: var(--info); line-height: 1.6; }
+  .differentiator strong { color: var(--info); }
+  .open-question { background: var(--warning-bg); border-left: 3px solid var(--warning); border-radius: 0 8px 8px 0; padding: 14px 18px; font-size: 14px; color: var(--text-primary); line-height: 1.6; margin-top: 16px; }
+  .open-question strong { color: var(--warning); }
+
+  /* Hierarchy */
+  .hierarchy-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .hierarchy-row:last-child { border-bottom: none; }
+  .hierarchy-priority { width: 28px; height: 28px; background: var(--brand-light); color: var(--brand); font-size: 13px; font-weight: 700; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .hierarchy-level { font-weight: 600; font-size: 14px; width: 130px; flex-shrink: 0; }
+  .hierarchy-desc { font-size: 13px; color: var(--text-secondary); flex: 1; }
+  .hierarchy-example { font-size: 12px; color: var(--text-muted); font-family: 'SF Mono', 'Fira Code', monospace; flex-shrink: 0; }
+
+  /* Status table */
+  .status-table .category-row td { background: var(--bg-subtle); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-secondary); padding: 8px 14px; }
+
+  /* Notation table */
+  .notation-table td:first-child { font-family: 'SF Mono', 'Fira Code', monospace; font-weight: 600; width: 200px; color: var(--brand); }
+
+  /* Terms table */
+  .terms-table td:first-child { font-weight: 600; white-space: nowrap; width: 220px; }
+  .terms-table td:nth-child(2) { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; color: var(--text-secondary); width: 200px; }
+  .terms-table td:nth-child(3) { color: var(--text-secondary); }
+
+  /* Comparison matrix */
+  .matrix-table thead th { text-align: center; }
+  .matrix-table thead th:first-child, .matrix-table thead th:nth-child(2) { text-align: left; }
+  .matrix-table tbody td { text-align: center; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; }
+  .matrix-table tbody td:first-child, .matrix-table tbody td:nth-child(2) { text-align: left; font-family: 'Inter', sans-serif; font-size: 14px; }
+  .price-up { color: var(--danger); }
+  .price-down { color: var(--success); }
+  .price-flat { color: var(--text-muted); }
+
+  /* Step cards */
+  .step-card { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border); }
+  .step-card:last-child { border-bottom: none; }
+  .step-num { width: 32px; height: 32px; background: var(--brand); color: white; font-size: 14px; font-weight: 700; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+  .step-content h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .step-content p { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+
+  /* TOC */
+  .toc { background: var(--bg-subtle); border-radius: 12px; padding: 24px 28px; margin-bottom: 48px; }
+  .toc h3 { font-size: 14px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 14px; }
+  .toc-list { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 32px; }
+  .toc-list li a { font-size: 14px; color: var(--text-primary); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+  .toc-list li a:hover { color: var(--brand); }
+  .toc-list li a .toc-num { color: var(--brand); font-weight: 600; font-size: 13px; width: 24px; }
+
+  /* Customer hierarchy visual */
+  .cust-tree { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 24px; background: var(--bg-subtle); border-radius: 12px; margin-bottom: 20px; }
+  .cust-node { background: var(--bg-white); border: 1px solid var(--border); border-radius: 8px; padding: 10px 20px; text-align: center; min-width: 200px; }
+  .cust-node.active { border-color: var(--brand); background: var(--brand-light); }
+  .cust-node .node-type { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
+  .cust-node .node-name { font-size: 14px; font-weight: 600; }
+  .cust-arrow { color: var(--text-muted); font-size: 18px; }
+
+  .footer { border-top: 1px solid var(--border); padding: 24px 0; margin-top: 48px; text-align: center; color: var(--text-muted); font-size: 13px; }
+  @media print { .container { max-width: 100%; padding: 0 16px; } .rule-card, .dash-card { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div id="auth-gate" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#FAFAFA;">
+  <div style="background:white;border:1px solid #E5E7EB;border-radius:12px;padding:40px;max-width:380px;width:100%;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+    <div style="font-size:28px;margin-bottom:8px;">&#128274;</div>
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:4px;">Philips CPQ Reference</h2>
+    <p style="font-size:14px;color:#6B7280;margin-bottom:24px;">Enter password to view this document</p>
+    <input id="pw-input" type="password" placeholder="Password" autocomplete="off"
+      style="width:100%;padding:10px 14px;border:1px solid #E5E7EB;border-radius:8px;font-size:14px;font-family:Inter,sans-serif;margin-bottom:12px;outline:none;transition:border-color 0.2s;"
+      onfocus="this.style.borderColor='#E94D35'" onblur="this.style.borderColor='#E5E7EB'"
+      onkeydown="if(event.key==='Enter')document.getElementById('pw-btn').click()">
+    <button id="pw-btn" onclick="checkPw()"
+      style="width:100%;padding:10px;background:#E94D35;color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;font-family:Inter,sans-serif;cursor:pointer;">
+      Unlock
+    </button>
+    <p id="pw-error" style="color:#EF4444;font-size:13px;margin-top:10px;display:none;">Incorrect password</p>
+  </div>
+</div>
+<div id="doc-content" style="display:none;">
+
+
+<div class="header">
+  <div class="container header-inner">
+    <div>
+      <h1>Philips CPQ - Pricing Rules Reference</h1>
+      <div class="subtitle">Internal reference for the pricing engine. All rules, formulas, and implementation status.</div>
+    </div>
+    <div class="version-badge">v2.0 - April 2026</div>
+  </div>
+</div>
+
+<div class="container">
+
+<nav class="toc">
+  <h3>Contents</h3>
+  <ol class="toc-list">
+    <li><a href="#status"><span class="toc-num">1</span> Status Dashboard</a></li>
+    <li><a href="#terms"><span class="toc-num">2</span> Key Terms &amp; Notation</a></li>
+    <li><a href="#engine"><span class="toc-num">3</span> How the Engine Picks a Price</a></li>
+    <li><a href="#entitlement"><span class="toc-num">4</span> Customer Entitlement Chain</a></li>
+    <li><a href="#scope"><span class="toc-num">5</span> Contract Product Scope</a></li>
+    <li><a href="#hierarchy"><span class="toc-num">6</span> Discount Hierarchy (Bottom-Up)</a></li>
+    <li><a href="#rules"><span class="toc-num">7</span> Rule Cards</a></li>
+    <li><a href="#bundles"><span class="toc-num">8</span> Bundle &amp; Option Pricing</a></li>
+    <li><a href="#resolution"><span class="toc-num">9</span> Contract Resolution</a></li>
+    <li><a href="#matrix"><span class="toc-num">10</span> Side-by-Side Comparison</a></li>
+    <li><a href="#versioning"><span class="toc-num">11</span> Contract Version Drafting</a></li>
+    <li><a href="#features"><span class="toc-num">12</span> Full Feature Status</a></li>
+  </ol>
+</nav>
+
+<!-- 1. STATUS DASHBOARD -->
+<div class="section" id="status">
+  <div class="section-header">
+    <span class="section-number">1</span>
+    <h2 class="section-title">Status Dashboard</h2>
+  </div>
+  <div class="dashboard-grid">
+    <div class="dash-card">
+      <div class="icon" style="background: var(--success-bg); color: var(--success);">&#10003;</div>
+      <div><div class="label">Discount Types</div><div class="value">5 <span style="font-size:14px; font-weight:500; color: var(--text-muted);">implemented + 1 excluded</span></div></div>
+    </div>
+    <div class="dash-card">
+      <div class="icon" style="background: var(--info-bg); color: var(--info);">&#8597;</div>
+      <div><div class="label">Hierarchy Levels</div><div class="value">9 <span style="font-size:14px; font-weight:500; color: var(--text-muted);">bottom-up search</span></div></div>
+    </div>
+    <div class="dash-card">
+      <div class="icon" style="background: var(--purple-bg); color: var(--purple);">&#9878;</div>
+      <div><div class="label">Resolution Strategies</div><div class="value">2 <span style="font-size:14px; font-weight:500; color: var(--text-muted);">Best Price + Hierarchy</span></div></div>
+    </div>
+    <div class="dash-card">
+      <div class="icon" style="background: var(--warning-bg); color: var(--warning);">&#9888;</div>
+      <div><div class="label">Conflict Types</div><div class="value">5 <span style="font-size:14px; font-weight:500; color: var(--text-muted);">auto-detected</span></div></div>
+    </div>
+  </div>
+  <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">The 5 discount types are: Price Float (with percentage or fixed-dollar variants), Fixed Price, Fixed or Lower, Falling Ceiling, and Bundle/Option Discounts. Price Movement Cards are excluded from the POC.</p>
+  <table>
+    <thead><tr><th>Discount Type</th><th>Formula</th><th>Does the engine remember anything?</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Price Float (percentage)</strong></td><td><code>net = list(today) x (1 - d%)</code></td><td>No. Each query is independent.</td><td><span class="badge badge-green">Implemented</span></td></tr>
+      <tr><td><strong>Price Float (fixed dollar)</strong></td><td><code>net = list(today) - $amount</code></td><td>No. Each query is independent.</td><td><span class="badge badge-green">Implemented</span></td></tr>
+      <tr><td><strong>Fixed Price</strong></td><td><code>net = list(contract start) x (1 - d%)</code></td><td>No. Each query is independent.</td><td><span class="badge badge-green">Implemented</span></td></tr>
+      <tr><td><strong>Fixed or Lower</strong></td><td><code>net = MIN(fixed, float)</code></td><td>No. Each query is independent.</td><td><span class="badge badge-green">Implemented</span></td></tr>
+      <tr><td><strong>Falling Ceiling</strong></td><td><code>net = MIN(watermark, float)</code></td><td><strong>Yes.</strong> Stores the lowest price ever given for each product per contract.</td><td><span class="badge badge-green">Implemented</span></td></tr>
+      <tr><td><strong>Bundle / Option Discount</strong></td><td><code>fixed_amount or percentage</code></td><td>No. Each query is independent.</td><td><span class="badge badge-green">Implemented</span></td></tr>
+      <tr><td><strong>Price Movement Cards</strong></td><td>TBD</td><td>TBD</td><td><span class="badge badge-red">Excluded</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 2. KEY TERMS -->
+<div class="section" id="terms">
+  <div class="section-header">
+    <span class="section-number">2</span>
+    <h2 class="section-title">Key Terms &amp; Formula Notation</h2>
+  </div>
+  <h3 style="font-size:16px; font-weight:600; margin-bottom:14px;">Key Terms</h3>
+  <table class="terms-table" style="margin-bottom:32px;">
+    <thead><tr><th>Term</th><th>DB / Code Reference</th><th>Definition</th></tr></thead>
+    <tbody>
+      <tr><td>List Price</td><td>price_list_items.list_price</td><td>The published base price for a product in a specific country, before any discount. Philips maintains versioned price lists (e.g., US-2025, US-2026), each with a valid date range.</td></tr>
+      <tr><td>Current List Price</td><td>list_price on pricing_date</td><td>The list price that is in effect on the date you are pricing. If pricing on Mar 15 2026, the engine looks up the price list valid on that date (US-2026).</td></tr>
+      <tr><td>Contract-Start List Price</td><td>list_price at contract.valid_from</td><td>The list price that was in effect on the day the contract started. This is a historical lookup. Example: contract C-006 started Jul 1 2025, so the engine looks up the US-2025 price list.</td></tr>
+      <tr><td>Discount %</td><td>discount_rules.discount_pct</td><td>The percentage discount from a rule. A 20% discount means the customer pays 80% of the list price.</td></tr>
+      <tr><td>Net Price</td><td>final_net_price</td><td>The final price the customer pays after the discount is applied. This is the output of the pricing engine.</td></tr>
+      <tr><td>Watermark</td><td>falling_ceiling_watermarks</td><td>The lowest price ever given to a customer for a specific product under a specific contract. The engine saves this in a database table and checks it on every future query. It can only go down, never up. Only used by the Falling Ceiling rule (see Rule Card #5).</td></tr>
+      <tr><td>Pricing Date</td><td>pricing_date</td><td>The date for which the price is being calculated. Usually today, but can be a future date (for forecasting) or a past date (for audit reconstruction).</td></tr>
+      <tr><td>GPO</td><td>customer.type = 'GPO'</td><td>Group Purchasing Organization. A large consortium that negotiates contracts on behalf of its member hospitals. Members inherit the GPO's pricing.</td></tr>
+      <tr><td>IDN</td><td>customer.type = 'IDN'</td><td>Integrated Delivery Network. A hospital system that owns or manages a network of hospitals. IDNs can negotiate their own contracts in addition to inheriting GPO contracts.</td></tr>
+      <tr><td>MPG</td><td>products.mpg</td><td>Material Pricing Group. A cross-hierarchy grouping used for pricing. Products from different Article Groups can share an MPG (e.g., MPG-BEDSIDE-MON groups all bedside monitors).</td></tr>
+      <tr><td>MG3</td><td>products.mg3</td><td>Material Group 3. Indicates product state: NEW, REFURBISHED, or UPGRADE. Enables rules like "12% off Patient Monitors, but only refurbished ones."</td></tr>
+      <tr><td>Contract Product Scope</td><td>contract_product_scope</td><td>Defines which products a contract covers. A contract scoped to BU=Connected Care only applies to products in that Business Unit. See Section 5.</td></tr>
+    </tbody>
+  </table>
+  <h3 style="font-size:16px; font-weight:600; margin-bottom:14px;">Formula Notation</h3>
+  <table class="notation-table">
+    <thead><tr><th>Notation</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td>list(today)</td><td>Current list price active on the pricing date</td></tr>
+      <tr><td>list(contract start)</td><td>Historical list price active on the contract's valid_from date</td></tr>
+      <tr><td>d%</td><td>Discount percentage from the applicable rule</td></tr>
+      <tr><td>(1 - d%)</td><td>Multiplier applied to list price. 20% discount = 0.80</td></tr>
+      <tr><td>$amount</td><td>Fixed dollar discount amount (only used with Price Float)</td></tr>
+      <tr><td>MIN(a, b)</td><td>The lower of two values. Customer always gets the cheaper price.</td></tr>
+      <tr><td>wm</td><td>Watermark: lowest net price achieved (Falling Ceiling only)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 3. HOW THE ENGINE PICKS A PRICE -->
+<div class="section" id="engine">
+  <div class="section-header">
+    <span class="section-number">3</span>
+    <h2 class="section-title">How the Engine Picks a Price</h2>
+  </div>
+  <p style="font-size:14px; color: var(--text-secondary); margin-bottom:20px;">Every pricing query goes through these 8 steps. The engine logs the full trace of every step for audit purposes.</p>
+  <div style="background: var(--bg-white); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+    <div class="step-card"><div class="step-num">1</div><div class="step-content"><h4>Accept the request</h4><p>Receive: customer ID, product SKU, quantity, and pricing date. Assign a unique transaction ID for traceability.</p></div></div>
+    <div class="step-card"><div class="step-num">2</div><div class="step-content"><h4>Look up the product</h4><p>Find the product and its full hierarchy: BU, MAG, AG, MG3, MPG. The engine needs these to search for discount rules at different levels.</p></div></div>
+    <div class="step-card"><div class="step-num">3</div><div class="step-content"><h4>Get the list price</h4><p>Look up the country price list active on the pricing date. Example: pricing on Mar 15 2026 uses the US-2026 price list (valid Jan 1 - Dec 31 2026).</p></div></div>
+    <div class="step-card"><div class="step-num">4</div><div class="step-content"><h4>Find all contracts for this customer</h4><p>Walk UP the customer hierarchy to collect contracts. A hospital inherits contracts from its parent IDN and grandparent GPO. See Section 4 for details.</p></div></div>
+    <div class="step-card"><div class="step-num">5</div><div class="step-content"><h4>Check product scope</h4><p>For each contract, verify the product is in scope. A contract scoped to BU=Connected Care will not price a Diagnostic Imaging product. Contracts that don't cover this product are eliminated. See Section 5.</p></div></div>
+    <div class="step-card"><div class="step-num">6</div><div class="step-content"><h4>Find the discount (bottom-up search)</h4><p>For each remaining contract, search for the most specific discount rule: SKU first, then MPG, then AG+MG3, all the way up to BU. First match wins. No compounding. See Section 6.</p></div></div>
+    <div class="step-card"><div class="step-num">7</div><div class="step-content"><h4>Calculate the net price</h4><p>Apply the discount using the rule's type (Price Float, Fixed Price, etc.). Each type uses a different formula. See Section 7 Rule Cards for all formulas.</p></div></div>
+    <div class="step-card"><div class="step-num">8</div><div class="step-content"><h4>Pick the winner</h4><p>If multiple contracts produced a price, select the winner using the resolution strategy: BEST_PRICE (lowest price wins) or HIERARCHY (closest contract wins). See Section 9. Log the full trace.</p></div></div>
+  </div>
+</div>
+
+<!-- 4. CUSTOMER ENTITLEMENT CHAIN -->
+<div class="section" id="entitlement">
+  <div class="section-header">
+    <span class="section-number">4</span>
+    <h2 class="section-title">Customer Entitlement Chain</h2>
+  </div>
+  <p style="font-size:14px; color: var(--text-secondary); margin-bottom:20px;">Customers are organized in a 3-level hierarchy: GPO > IDN > Hospital. When a hospital asks for a price, the engine walks UP the chain and collects contracts from every level. The hospital does not need its own contract -- it can inherit pricing from its parent IDN or grandparent GPO.</p>
+
+  <div class="cust-tree">
+    <div class="cust-node"><div class="node-type">GPO</div><div class="node-name">GPO Premier</div><div style="font-size:12px; color:var(--text-muted);">Contract C-001 (18% BU, 28% SKU...)</div></div>
+    <div class="cust-arrow">&#8595;</div>
+    <div class="cust-node"><div class="node-type">IDN</div><div class="node-name">IDN HealthFirst</div><div style="font-size:12px; color:var(--text-muted);">Contract C-002 (22% MAG...)</div></div>
+    <div class="cust-arrow">&#8595;</div>
+    <div class="cust-node active"><div class="node-type">Hospital</div><div class="node-name">Memorial Hospital (H-MEM)</div><div style="font-size:12px; color:var(--text-muted);">No own contract. Inherits C-001 + C-002.</div></div>
+  </div>
+
+  <div class="example-box">
+    <span class="example-label">Walkthrough</span>
+    <div class="example-setup">Memorial Hospital (H-MEM) wants a price for MON-8500X. The engine walks up:</div>
+    <ul class="example-steps">
+      <li><span class="step-date">Step 1:</span> Check H-MEM's own contracts. None found.</li>
+      <li><span class="step-date">Step 2:</span> H-MEM's parent is IDN HealthFirst. Check IDN-HF's contracts. Found: C-002.</li>
+      <li><span class="step-date">Step 3:</span> IDN-HF's parent is GPO Premier. Check GPO-PREM's contracts. Found: C-001.</li>
+      <li><span class="step-date">Result:</span> H-MEM is entitled to <strong>both C-001 and C-002</strong>. The engine prices MON-8500X under each contract and picks the better deal.</li>
+    </ul>
+  </div>
+
+  <p style="font-size:13px; color:var(--text-muted); margin-top:12px;">Note: Some hospitals have direct contracts too. For example, Central Surgical Center (H-CSC) has contract C-006 (Direct) AND inherits C-001 from GPO Premier. Independent hospitals like University Research Hospital (H-URH) only have their own Framework contract (C-003).</p>
+</div>
+
+<!-- 5. CONTRACT PRODUCT SCOPE -->
+<div class="section" id="scope">
+  <div class="section-header">
+    <span class="section-number">5</span>
+    <h2 class="section-title">Contract Product Scope</h2>
+  </div>
+  <p style="font-size:14px; color: var(--text-secondary); margin-bottom:20px;">A contract does not cover every product in the Philips catalog. Each contract defines which products it applies to using a "product scope" -- one or more entries that specify a part of the product hierarchy. If a product does not fall within the contract's scope, that contract is skipped during pricing.</p>
+
+  <table style="margin-bottom:20px;">
+    <thead><tr><th>Contract</th><th>Scope Level</th><th>Scope Value</th><th>What it covers</th></tr></thead>
+    <tbody>
+      <tr><td>C-001 (GPO Premier)</td><td>BU</td><td>Connected Care</td><td>All products in the Connected Care business unit</td></tr>
+      <tr><td>C-002 (IDN HealthFirst)</td><td>MAG</td><td>Monitoring Systems, Therapeutic Care</td><td>Only products in these two Main Article Groups</td></tr>
+      <tr><td>C-003 (Framework - Univ Research)</td><td>AG, BU, MPG</td><td>Patient Monitors, Diagnostic Imaging, MPG-VENTILATORS</td><td>A mix of scopes: one Article Group, one full BU, and one Pricing Group</td></tr>
+      <tr><td>C-004 (GPO National Alliance)</td><td>BU</td><td>Connected Care</td><td>All products in Connected Care</td></tr>
+      <tr><td>C-005 (IDN MetroHealth)</td><td>MPG</td><td>MPG-BEDSIDE-MON</td><td>Only bedside monitors (cross-hierarchy group)</td></tr>
+      <tr><td>C-006 (Direct - Central Surgical)</td><td>MAG</td><td>Monitoring Systems</td><td>Only products in Monitoring Systems</td></tr>
+    </tbody>
+  </table>
+
+  <div class="differentiator">
+    <strong>Why this matters:</strong> If Memorial Hospital (entitled to C-001 and C-002) asks for a price on an Imaging product (e.g., IMG-COIL-8CH), C-001 is scoped to Connected Care (wrong BU) and C-002 is scoped to Monitoring Systems and Therapeutic Care (wrong MAG). Neither contract covers this product, so the engine returns the full list price with no discount.
+  </div>
+</div>
+
+<!-- 6. DISCOUNT HIERARCHY -->
+<div class="section" id="hierarchy">
+  <div class="section-header">
+    <span class="section-number">6</span>
+    <h2 class="section-title">Discount Hierarchy (Bottom-Up Search)</h2>
+  </div>
+  <p style="font-size:14px; color: var(--text-secondary); margin-bottom:20px;">When the engine looks for a discount rule within a contract, it starts at the most specific level (the exact product SKU) and works upward to the broadest level (the entire Business Unit). It stops as soon as it finds a match. <strong>Discounts are never stacked or combined.</strong></p>
+
+  <div style="background: var(--bg-white); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+    <p style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; margin-bottom: 12px;">Most specific (checked first) &#8594; Broadest (checked last)</p>
+    <div class="hierarchy-row"><span class="hierarchy-priority">1</span><span class="hierarchy-level">SKU</span><span class="hierarchy-desc">Exact product code</span><span class="hierarchy-example">MON-8500X</span></div>
+    <div class="hierarchy-row"><span class="hierarchy-priority">2</span><span class="hierarchy-level">BUNDLE_PRODUCT</span><span class="hierarchy-desc">Bundle-specific rule (only checked if the product is a Bundle)</span><span class="hierarchy-example">ICU-ROOM-PKG</span></div>
+    <div class="hierarchy-row"><span class="hierarchy-priority">3</span><span class="hierarchy-level">MPG</span><span class="hierarchy-desc">Material Pricing Group (cross-hierarchy grouping)</span><span class="hierarchy-example">MPG-BEDSIDE-MON</span></div>
+    <div class="hierarchy-row"><span class="hierarchy-priority">4</span><span class="hierarchy-level">AG + MG3</span><span class="hierarchy-desc">Article Group + Product State (e.g., only refurbished monitors)</span><span class="hierarchy-example">Patient Monitors+REFURBISHED</span></div>
+    <div class="hierarchy-row"><span class="hierarchy-priority">5</span><span class="hierarchy-level">AG</span><span class="hierarchy-desc">Article Group (all product states)</span><span class="hierarchy-example">Patient Monitors</span></div>
+    <div class="hierarchy-row"><span class="hierarchy-priority">6</span><span class="hierarchy-level">MAG + MG3</span><span class="hierarchy-desc">Main Article Group + Product State</span><span class="hierarchy-example">Monitoring Systems+NEW</span></div>
+    <div class="hierarchy-row"><span class="hierarchy-priority">7</span><span class="hierarchy-level">MAG</span><span class="hierarchy-desc">Main Article Group (all product states)</span><span class="hierarchy-example">Monitoring Systems</span></div>
+    <div class="hierarchy-row"><span class="hierarchy-priority">8</span><span class="hierarchy-level">BU + MG3</span><span class="hierarchy-desc">Business Unit + Product State</span><span class="hierarchy-example">Connected Care+NEW</span></div>
+    <div class="hierarchy-row"><span class="hierarchy-priority">9</span><span class="hierarchy-level">BU</span><span class="hierarchy-desc">Business Unit (broadest level, all products in the BU)</span><span class="hierarchy-example">Connected Care</span></div>
+  </div>
+
+  <div class="example-box">
+    <span class="example-label">Example: Bottom-Up Search for MON-5500S under GPO Premier (C-001)</span>
+    <div class="example-setup">MON-5500S is in: BU=Connected Care, MAG=Monitoring Systems, AG=Patient Monitors, MG3=NEW, MPG=MPG-BEDSIDE-MON. C-001 has rules at SKU (R6 for MON-8500X only), AG (R1b for Patient Monitors at 24%), and BU (R1a for Connected Care at 18%).</div>
+    <ul class="example-steps">
+      <li><span class="step-date">SKU?</span> Looking for MON-5500S. No rule. Continue.</li>
+      <li><span class="step-date">BUNDLE?</span> Not a bundle product. Skip.</li>
+      <li><span class="step-date">MPG?</span> Looking for MPG-BEDSIDE-MON. No rule. Continue.</li>
+      <li><span class="step-date">AG+MG3?</span> Looking for Patient Monitors+NEW. No rule. Continue.</li>
+      <li><span class="step-date">AG?</span> Looking for Patient Monitors. <span class="step-result">Found R1b at 24%. STOP.</span></li>
+    </ul>
+    <div style="font-size:13px; color:var(--text-secondary); margin-top:8px;">The engine never checks MAG, BU+MG3, or BU because it already found a match at AG. Net = $8,200 x 0.76 = $6,232.</div>
+  </div>
+</div>
+
+<!-- 7. RULE CARDS -->
+<div class="section" id="rules">
+  <div class="section-header">
+    <span class="section-number">7</span>
+    <h2 class="section-title">Rule Cards</h2>
+  </div>
+
+  <!-- Card 1: Price Float (Percentage) -->
+  <div class="rule-card">
+    <div class="rule-card-header"><div><h3>Price Float (Percentage) <span class="rule-id">#1</span></h3></div><span class="badge badge-green">Implemented</span></div>
+    <div class="rule-card-body">
+      <div class="rule-oneliner">The discount percentage is applied to whatever the list price is <em>today</em>. If Philips raises the list price next month, the customer's net price goes up too (they pay more). If Philips lowers the list price, the customer's net price goes down (they pay less). The price "floats" with the market.</div>
+      <div class="formula-box"><span class="formula-label">Formula</span>net = list(today) x (1 - d%)</div>
+      <div class="example-box">
+        <span class="example-label">Worked Example (using actual seed data)</span>
+        <div class="example-setup">Memorial Hospital orders MON-8500X (IntelliVue MX850). GPO Premier contract C-001 gives 28% off this specific SKU (rule R6). US-2026 list price: $18,500.</div>
+        <ul class="example-steps">
+          <li><span class="step-date">Mar 15 2026:</span> List = $18,500 (US-2026). <span class="step-calc">$18,500 x 0.72</span> = <span class="step-result">$13,320</span></li>
+        </ul>
+        <div style="font-size:13px; color:var(--text-secondary); margin-top:8px;">If Philips published a US-2027 price list with MON-8500X at $19,500, the same query on Jan 2 2027 would yield $19,500 x 0.72 = $14,040. The customer pays $720 more just because the list price went up. If the 2027 price dropped to $17,000 instead, the customer pays $17,000 x 0.72 = $12,240, saving $1,080.</div>
+      </div>
+      <div class="differentiator"><strong>Key difference:</strong> The engine does not remember any previous prices. Every time someone asks "what does this cost?", it looks up today's list price and applies the discount fresh. The price can go up or down freely.</div>
+    </div>
+  </div>
+
+  <!-- Card 2: Price Float (Fixed Dollar) -->
+  <div class="rule-card">
+    <div class="rule-card-header"><div><h3>Price Float (Fixed Dollar) <span class="rule-id">#1b</span></h3></div><span class="badge badge-green">Implemented</span></div>
+    <div class="rule-card-body">
+      <div class="rule-oneliner">Instead of taking a percentage off, a fixed dollar amount (e.g., $75) is subtracted from today's list price. Every product covered by this rule gets the same dollar discount, regardless of whether the product costs $5,000 or $50,000. Like Price Float, the price still moves when Philips changes the list price.</div>
+      <div class="formula-box"><span class="formula-label">Formula</span>net = list(today) - $amount<br>net = MAX(0, net) <span style="color: var(--text-muted); font-family: Inter, sans-serif; font-size: 12px;">// price can never go below zero</span></div>
+      <div class="example-box">
+        <span class="example-label">Worked Example (using actual seed data)</span>
+        <div class="example-setup">GPO National Alliance (C-004) has rule R-FD-1: a flat $75 off all Patient Monitors (AG level). This applies to every Patient Monitor SKU regardless of its price.</div>
+        <ul class="example-steps">
+          <li><span class="step-date">MON-8500X:</span> List = $18,500. <span class="step-calc">$18,500 - $75</span> = <span class="step-result">$18,425</span> <span style="color:var(--text-muted); font-size:12px;">(tiny 0.4% saving on an expensive product)</span></li>
+          <li><span class="step-date">MON-4000B:</span> List = $5,400. <span class="step-calc">$5,400 - $75</span> = <span class="step-result">$5,325</span> <span style="color:var(--text-muted); font-size:12px;">(1.4% saving, same $75)</span></li>
+        </ul>
+      </div>
+      <div class="differentiator"><strong>Key difference:</strong> This is the only variant that uses a dollar amount instead of a percentage. It can only be used with the Price Float discount type. You cannot combine fixed-dollar amounts with Fixed Price, Fixed or Lower, or Falling Ceiling rules.</div>
+    </div>
+  </div>
+
+  <!-- Card 3: Fixed Price -->
+  <div class="rule-card">
+    <div class="rule-card-header"><div><h3>Fixed Price <span class="rule-id">#2</span></h3></div><span class="badge badge-green">Implemented</span></div>
+    <div class="rule-card-body">
+      <div class="rule-oneliner">The discount is applied to the list price that was in effect <em>on the day the contract started</em>, not today's price. The customer's net price is calculated once and stays the same for the entire contract, no matter what happens to list prices afterward. Philips raises prices? Customer still pays the original rate. Philips lowers prices? Customer still pays the original rate (they do NOT get the benefit of the drop).</div>
+      <div class="formula-box"><span class="formula-label">Formula</span>reference = list(contract start)<br>net = reference x (1 - d%)</div>
+      <div class="example-box">
+        <span class="example-label">Worked Example (using actual seed data)</span>
+        <div class="example-setup">Contract C-006 (Direct - Central Surgical Center) started Jul 1, 2025. On that date, the active price list was US-2025. MON-8500X had a list price of $17,575 in US-2025. Suppose C-006 had a Fixed Price rule at 15% for MON-8500X. The engine locks in $17,575 as the reference.</div>
+        <ul class="example-steps">
+          <li><span class="step-date">Jul 2025:</span> Reference price locked. <span class="step-calc">$17,575 x 0.85</span> = <span class="step-result">$14,938.75</span></li>
+          <li><span class="step-date">Mar 2026:</span> US-2026 list price is now $18,500. Doesn't matter. <span class="step-calc">Still $17,575 x 0.85</span> = <span class="step-result">$14,938.75</span> <span style="color:var(--text-muted); font-size:12px;">customer is protected from the $925 increase</span></li>
+          <li><span class="step-date">Hypothetical:</span> If Philips dropped the list to $16,000, customer still pays <span class="step-result">$14,938.75</span> <span style="color:var(--text-muted); font-size:12px;">customer misses the drop</span></li>
+        </ul>
+      </div>
+      <div class="differentiator"><strong>Key difference:</strong> The engine has to look up a historical list price (what was the price on the contract start date?). If that historical data is missing, it falls back to today's price and adds a warning to the trace. Unlike Price Float, this price never changes during the contract.</div>
+    </div>
+  </div>
+
+  <!-- Card 4: Fixed or Lower -->
+  <div class="rule-card">
+    <div class="rule-card-header"><div><h3>Fixed or Lower <span class="rule-id">#3</span></h3></div><span class="badge badge-green">Implemented</span></div>
+    <div class="rule-card-body">
+      <div class="rule-oneliner">The engine calculates two prices every time: (a) the <strong>fixed price</strong> based on the contract-start list price, and (b) the <strong>floating price</strong> based on today's list price. The customer always pays whichever is lower. If Philips raises list prices, the customer is protected (the fixed price kicks in as a ceiling). If Philips lowers list prices, the customer benefits (the floating price drops below the fixed price). Best of both worlds for the customer.</div>
+      <div class="formula-box"><span class="formula-label">Formula</span>fixed = list(contract start) x (1 - d%)<br>float = list(today) x (1 - d%)<br>net = MIN(fixed, float) <span style="color: var(--text-muted); font-family: Inter, sans-serif; font-size: 12px;">// customer always gets the cheaper one</span></div>
+      <div class="example-box">
+        <span class="example-label">Worked Example (using actual seed data)</span>
+        <div class="example-setup">Central Surgical Center (H-CSC) has contract C-006 (Direct, started Jul 1 2025). Rule R-FOL-2: 15% off MON-8500X as Fixed or Lower. The US-2025 list price for MON-8500X was $17,575. So the fixed ceiling = $17,575 x 0.85 = $14,938.75.</div>
+        <ul class="example-steps">
+          <li><span class="step-date">Fixed ceiling:</span> $17,575 x 0.85 = <span class="step-result">$14,938.75</span> <span style="color:var(--text-muted); font-size:12px;">(this never changes during the contract)</span></li>
+          <li><span class="step-date">Mar 2026:</span> US-2026 list = $18,500. <span class="step-calc">Float = $18,500 x 0.85 = $15,725. Compare: $14,938.75 vs $15,725</span> = <span class="step-result">$14,938.75</span> <span style="color:var(--text-muted); font-size:12px;">fixed is cheaper, customer protected from increase</span></li>
+          <li><span class="step-date">Hypothetical:</span> If list dropped to $16,000. <span class="step-calc">Float = $16,000 x 0.85 = $13,600. Compare: $14,938.75 vs $13,600</span> = <span class="step-result">$13,600.00</span> <span style="color:var(--success); font-size:12px;">float is cheaper, customer benefits from drop</span></li>
+          <li><span class="step-date">Later:</span> If list goes back to $19,000. <span class="step-calc">Float = $19,000 x 0.85 = $16,150. Compare: $14,938.75 vs $16,150</span> = <span class="step-result">$14,938.75</span> <span style="color:var(--text-muted); font-size:12px;">back to the fixed ceiling</span></li>
+        </ul>
+      </div>
+      <div class="differentiator"><strong>Key difference from Falling Ceiling:</strong> When list prices rise back up, the price CAN go back up to the fixed ceiling ($14,938.75 in this example). The engine does not remember the $13,600 from the hypothetical drop. Each query is calculated fresh with no memory of past prices.</div>
+    </div>
+  </div>
+
+  <!-- Card 5: Falling Ceiling -->
+  <div class="rule-card">
+    <div class="rule-card-header"><div><h3>Falling Ceiling <span class="rule-id">#4</span></h3></div><span class="badge badge-green">Implemented</span></div>
+    <div class="rule-card-body">
+      <div class="rule-oneliner">The customer's price can only ever go <em>down</em>, never back up. When the first pricing query is made, the engine calculates the initial net price and saves it as the "watermark" (the lowest price so far). Every time a pricing query comes in, the engine compares today's calculated price against the watermark. If today's price is lower, it becomes the new watermark. If today's price is higher, the customer still pays the old watermark. <strong>Once the price drops, it stays down permanently for the rest of the contract.</strong></div>
+      <div class="formula-box"><span class="formula-label">Formula</span>initial_ceiling = list(contract start) x (1 - d%)<br>float = list(today) x (1 - d%)<br>net = MIN(watermark, float)<br>IF net &lt; watermark THEN watermark = net <span style="color: var(--text-muted); font-family: Inter, sans-serif; font-size: 12px;">// save the new low as the permanent ceiling</span></div>
+      <div class="example-box">
+        <span class="example-label">Worked Example (using actual seed data)</span>
+        <div class="example-setup">GPO Premier (C-001) has rule R-FC-1: 12% off VENT-7000 (Trilogy Evo ventilator) as Falling Ceiling. Contract started Jan 1 2026. The US-2026 list price for VENT-7000 is $24,500. Initial ceiling = $24,500 x 0.88 = $21,560.</div>
+        <ul class="example-steps">
+          <li><span class="step-date">First query:</span> Watermark initialized. <span class="step-calc">$24,500 x 0.88</span> = <span class="step-result">$21,560</span> <span style="color:var(--text-muted); font-size:12px;">this is saved in the database</span></li>
+          <li><span class="step-date">Hypothetical:</span> List rises to $26,000. <span class="step-calc">Float = $26,000 x 0.88 = $22,880. Compare to watermark: $21,560</span> = <span class="step-result">$21,560</span> <span style="color:var(--text-muted); font-size:12px;">float is higher, customer pays the saved watermark</span></li>
+          <li><span class="step-date">Hypothetical:</span> List drops to $22,000. <span class="step-calc">Float = $22,000 x 0.88 = $19,360. Compare to watermark: $21,560</span> = <span class="step-result">$19,360</span> <span style="color:var(--success); font-size:12px;">float is lower! New watermark saved.</span></li>
+          <li><span class="step-date">Hypothetical:</span> List back to $28,000. <span class="step-calc">Float = $28,000 x 0.88 = $24,640. Compare to watermark: $19,360</span> = <span class="step-result">$19,360</span> <span style="color:var(--text-muted); font-size:12px;">customer still pays $19,360, the drop is locked in forever</span></li>
+        </ul>
+      </div>
+      <div class="differentiator"><strong>Key difference from Fixed or Lower:</strong> This is the ONLY rule where the engine remembers past pricing queries. It stores the lowest price ever given in a database table (falling_ceiling_watermarks). With Fixed or Lower, if the price drops to $19,360 and later rises, the customer goes back up to the fixed ceiling. With Falling Ceiling, the $19,360 is permanent. This is the most favorable rule for customers and the most expensive for Philips.</div>
+      <div class="open-question"><strong>Open question for Philips:</strong> The watermark is NOT created when the contract starts. It is created the first time someone actually prices that product under the contract. The current implementation takes the lower of (a) the contract-start ceiling and (b) today's float price at the time of that first query. This means if list prices dropped between contract start and the first order, the watermark starts at the lower value, giving the customer a better starting point than the spec intended. Example: contract starts Jan 1 at $24,500 (ceiling = $21,560), but nobody orders until June when the list dropped to $22,000 (float = $19,360). The watermark initializes at $19,360, not $21,560. Is this the intended behavior, or should the watermark always initialize at the contract-start ceiling regardless of when the first query happens?</div>
+      <div class="open-question" style="margin-top: 8px;"><strong>Implementation note:</strong> Simulations and pricelist generation do NOT update the watermark. This is by design: running a "what-if" scenario or generating a report should never permanently change a customer's price. Only actual pricing transactions (quotes and orders) can ratchet the watermark down.</div>
+    </div>
+  </div>
+
+  <!-- Card 6: Bundle / Option Discounts -->
+  <div class="rule-card">
+    <div class="rule-card-header"><div><h3>Bundle &amp; Option Discounts <span class="rule-id">#5</span></h3></div><span class="badge badge-green">Implemented</span></div>
+    <div class="rule-card-body">
+      <div class="rule-oneliner">A bundle is a product package (e.g., an ICU Room Monitoring Package) that contains a core product plus optional add-ons. The bundle itself gets a contract discount just like any standalone product. The add-on options get their own separate discounts, which can be a flat dollar amount or a percentage. <strong>Important:</strong> the same option (e.g., a 512GB storage upgrade) can have a different discount when purchased inside a bundle vs. purchased on its own.</div>
+      <div class="formula-box"><span class="formula-label">Bundle Formula</span>bundle_net = bundle_list_price x (1 - bundle_d%)<br>option_discount = fixed_amount OR (option_list_price x option_d%)<br>total = bundle_net - sum(option_discounts)<br><br><span class="formula-label">How option discounts are found</span>1. First, look for a discount specific to this option + this bundle<br>2. If none found, fall back to the generic discount for this option</div>
+      <div class="example-box">
+        <span class="example-label">Worked Example (using actual seed data)</span>
+        <div class="example-setup">A hospital orders ICU-ROOM-PKG bundle (list $45,000) under GPO Premier (C-001). Rule R-BUNDLE-1 gives 25% off the bundle. They add a 512GB storage module (OPT-MEM-512, standalone list $800). This option has two discount entries: $75 off when standalone (OD-001) and $60 off when inside the ICU bundle specifically (OD-002). Since it's inside the ICU bundle, OD-002 applies.</div>
+        <ul class="example-steps">
+          <li><span class="step-date">Bundle price:</span> $45,000 x 0.75 = <span class="step-result">$33,750</span></li>
+          <li><span class="step-date">Option discount:</span> 512GB storage gets the bundle-specific $60 off (OD-002), not the standalone $75 off = <span class="step-result">$60 off</span></li>
+          <li><span class="step-date">Total:</span> $33,750 - $60 = <span class="step-result">$33,690</span></li>
+        </ul>
+      </div>
+      <div class="differentiator"><strong>Key difference:</strong> Options inside a bundle show $0 as their list price (their cost is included in the bundle price). The option discount is an additional reduction. If the same option is bought standalone, it gets a normal hierarchy discount and the standalone option discount. Also note: bundle pricing always uses the BEST_PRICE resolution strategy, even if HIERARCHY is set for standalone products.</div>
+    </div>
+  </div>
+
+  <!-- Card 7: Price Movement Cards -->
+  <div class="rule-card" style="opacity: 0.6;">
+    <div class="rule-card-header"><div><h3>Price Movement Cards <span class="rule-id">#6</span></h3></div><span class="badge badge-red">Excluded from POC</span></div>
+    <div class="rule-card-body"><div class="rule-oneliner">Complex pricing mechanism excluded from POC scope. Requires a dedicated discovery session with Philips to define rules, triggers, and calculation methodology. No formula, examples, or edge cases available yet.</div></div>
+  </div>
+</div>
+
+<!-- 8. BUNDLE & OPTION PRICING -->
+<div class="section" id="bundles">
+  <div class="section-header">
+    <span class="section-number">8</span>
+    <h2 class="section-title">Bundle &amp; Option Pricing</h2>
+  </div>
+  <p style="font-size:14px; color: var(--text-secondary); margin-bottom:20px;">Some products are sold as packages (bundles) rather than individually. For example, an "ICU Room Monitoring Package" includes a core monitor plus optional add-ons like storage upgrades, color options, and accessories. The engine prices bundles differently from individual products.</p>
+  <table style="margin-bottom:24px;">
+    <thead><tr><th>Concept</th><th>Behavior</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Bundle list price</strong></td><td>The bundle has its own list price in the country price list (e.g., ICU-ROOM-PKG = $45,000)</td></tr>
+      <tr><td><strong>Bundle discount</strong></td><td>Found via bottom-up hierarchy search (same as standalone). There is also a dedicated BUNDLE_PRODUCT level (priority 2) for bundle-specific rules.</td></tr>
+      <tr><td><strong>Option list price in bundle</strong></td><td>When an option is purchased inside a bundle, its list price shows as $0 (the cost is included in the bundle price). The option only receives its own separate discount.</td></tr>
+      <tr><td><strong>How option discounts are found</strong></td><td>The engine first looks for a discount tied to this specific option + this specific bundle. If none exists, it falls back to a generic discount for the option regardless of which bundle it's in.</td></tr>
+      <tr><td><strong>Option discount types</strong></td><td>Either a flat dollar amount (e.g., "$60 off") or a percentage of the option's standalone list price (e.g., "10% off the $200 Gold Finish")</td></tr>
+      <tr><td><strong>Same product bought standalone</strong></td><td>If a customer buys the same SKU on its own (not inside a bundle), it gets the normal contract discount like any standalone product. The bundle option discount does not apply.</td></tr>
+      <tr><td><strong>Component validation</strong></td><td>The engine checks that each option belongs to the bundle, and that quantities are within the allowed min/max range defined for each component.</td></tr>
+    </tbody>
+  </table>
+  <h3 style="font-size:15px; font-weight:600; margin-bottom:12px;">ICU-ROOM-PKG Bundle Components</h3>
+  <table>
+    <thead><tr><th>Component</th><th>SKU</th><th>Type</th><th>Category</th><th>Min/Max Qty</th></tr></thead>
+    <tbody>
+      <tr><td>IntelliVue MX850</td><td>MON-8500X</td><td><span class="badge badge-red">Required</span></td><td>Core</td><td>1 / 1</td></tr>
+      <tr><td>256GB Storage</td><td>OPT-MEM-256</td><td><span class="badge badge-blue">Optional</span></td><td>Storage</td><td>0 / 1</td></tr>
+      <tr><td>512GB Storage</td><td>OPT-MEM-512</td><td><span class="badge badge-blue">Optional</span></td><td>Storage</td><td>0 / 1</td></tr>
+      <tr><td>1TB Storage</td><td>OPT-MEM-1TB</td><td><span class="badge badge-blue">Optional</span></td><td>Storage</td><td>0 / 1</td></tr>
+      <tr><td>Silver Finish</td><td>OPT-COL-SLV</td><td><span class="badge badge-blue">Optional</span></td><td>Colour</td><td>0 / 1</td></tr>
+      <tr><td>Gold Finish</td><td>OPT-COL-GLD</td><td><span class="badge badge-blue">Optional</span></td><td>Colour</td><td>0 / 1</td></tr>
+      <tr><td>Graphite Black</td><td>OPT-COL-BLK</td><td><span class="badge badge-blue">Optional</span></td><td>Colour</td><td>0 / 1</td></tr>
+      <tr><td>Cable Assembly Set</td><td>MON-CABLE-SET</td><td><span class="badge badge-blue">Optional</span></td><td>Accessory</td><td>0 / 3</td></tr>
+      <tr><td>Docking Station</td><td>MON-DOCK-1</td><td><span class="badge badge-blue">Optional</span></td><td>Accessory</td><td>0 / 2</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 9. CONTRACT RESOLUTION -->
+<div class="section" id="resolution">
+  <div class="section-header">
+    <span class="section-number">9</span>
+    <h2 class="section-title">Contract Resolution Strategies</h2>
+  </div>
+  <p style="font-size:14px; color: var(--text-secondary); margin-bottom:20px;">A hospital can be entitled to multiple contracts at the same time (e.g., their parent IDN's contract AND their grandparent GPO's contract). When this happens, the engine needs to decide which contract to use. There are two strategies.</p>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+    <div class="rule-card" style="margin-bottom:0;">
+      <div class="rule-card-header"><h3>BEST_PRICE</h3><span class="badge badge-green">Default</span></div>
+      <div class="rule-card-body">
+        <div class="rule-oneliner">Calculate the price from every contract the customer is entitled to, then give them whichever contract produces the cheapest price.</div>
+        <div class="formula-box"><span class="formula-label">Logic</span>winner = contract with MIN(net_price)</div>
+      </div>
+    </div>
+    <div class="rule-card" style="margin-bottom:0;">
+      <div class="rule-card-header"><h3>HIERARCHY</h3><span class="badge badge-green">Toggleable</span></div>
+      <div class="rule-card-body">
+        <div class="rule-oneliner">Pick the contract based on which organization is closest to the customer. A hospital's own direct contract beats its parent IDN's contract, which beats its grandparent GPO's contract. If two contracts are the same type, the cheaper one wins.</div>
+        <div class="formula-box"><span class="formula-label">Priority Order</span>1. Framework/Direct (closest)<br>2. IDN<br>3. GPO (broadest)</div>
+      </div>
+    </div>
+  </div>
+  <div class="example-box">
+    <span class="example-label">Example: Memorial Hospital (H-MEM) ordering MON-8500X ($18,500)</span>
+    <div class="example-setup">H-MEM is entitled to C-001 (GPO Premier) and C-002 (IDN HealthFirst). Under C-001, the bottom-up search finds R6 (SKU-level, 28%). Under C-002, the search finds R2a (MAG-level, 22%). Note: R6 only exists on C-001, so C-002 doesn't get the SKU-level match.</div>
+    <ul class="example-steps" style="margin-top:10px;">
+      <li><span class="step-date">C-001 (GPO):</span> $18,500 x 0.72 = <strong>$13,320</strong></li>
+      <li><span class="step-date">C-002 (IDN):</span> $18,500 x 0.78 = <strong>$14,430</strong></li>
+      <li><span class="step-date">BEST_PRICE:</span> <span class="step-result">$13,320 via GPO Premier</span> (GPO contract wins because it gives the lowest price)</li>
+      <li><span class="step-date">HIERARCHY:</span> <span class="step-result">$14,430 via IDN HealthFirst</span> (IDN is closer to the hospital than GPO, so it wins even though the price is higher)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 10. SIDE-BY-SIDE COMPARISON -->
+<div class="section" id="matrix">
+  <div class="section-header">
+    <span class="section-number">10</span>
+    <h2 class="section-title">Side-by-Side Comparison</h2>
+  </div>
+  <p style="font-size:14px; color: var(--text-secondary); margin-bottom:20px;">To see how the four percentage-based rules behave differently, here is the same scenario applied to all four. A product starts with a $10,000 list price, the contract gives a 20% discount, and the list price changes throughout the year. Notice how each rule responds differently to the same price movements.</p>
+  <table class="matrix-table" style="margin-bottom: 24px;">
+    <thead><tr><th>Date</th><th>List Price</th><th>Price Float</th><th>Fixed Price</th><th>Fixed or Lower</th><th>Falling Ceiling</th></tr></thead>
+    <tbody>
+      <tr><td>Jan 1</td><td>$10,000</td><td>$8,000</td><td>$8,000</td><td>$8,000</td><td>$8,000</td></tr>
+      <tr><td>Mar 15</td><td>$10,500</td><td class="price-up">$8,400 &#9650;</td><td class="price-flat">$8,000 --</td><td class="price-flat">$8,000 <span style="font-size:11px">(fixed)</span></td><td class="price-flat">$8,000 <span style="font-size:11px">(ceiling)</span></td></tr>
+      <tr><td>Jun 1</td><td>$9,000</td><td class="price-down">$7,200 &#9660;</td><td class="price-flat">$8,000 --</td><td class="price-down">$7,200 <span style="font-size:11px">(float)</span></td><td class="price-down">$7,200 <span style="font-size:11px">(wm &#9660;)</span></td></tr>
+      <tr><td>Sep 1</td><td>$11,000</td><td class="price-up">$8,800 &#9650;</td><td class="price-flat">$8,000 --</td><td class="price-flat">$8,000 <span style="font-size:11px">(fixed)</span></td><td class="price-flat">$7,200 <span style="font-size:11px">(ceiling)</span></td></tr>
+      <tr><td>Nov 1</td><td>$8,500</td><td class="price-down">$6,800 &#9660;</td><td class="price-flat">$8,000 --</td><td class="price-down">$6,800 <span style="font-size:11px">(float)</span></td><td class="price-down">$6,800 <span style="font-size:11px">(wm &#9660;)</span></td></tr>
+      <tr><td>Dec 1</td><td>$12,000</td><td class="price-up">$9,600 &#9650;</td><td class="price-flat">$8,000 --</td><td class="price-flat">$8,000 <span style="font-size:11px">(fixed)</span></td><td class="price-flat">$6,800 <span style="font-size:11px">(ceiling)</span></td></tr>
+    </tbody>
+  </table>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+    <div style="background: var(--bg-subtle); border-radius: 8px; padding: 14px 18px;">
+      <div style="font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px;">Price Range Over Year</div>
+      <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.7;">
+        <strong>Price Float:</strong> $6,800 - $9,600 (most volatile)<br>
+        <strong>Fixed Price:</strong> $8,000 - $8,000 (perfectly stable)<br>
+        <strong>Fixed or Lower:</strong> $6,800 - $8,000 (capped upside, benefits from drops)<br>
+        <strong>Falling Ceiling:</strong> $6,800 - $8,000 (only goes down, locks every new low)
+      </div>
+    </div>
+    <div style="background: var(--bg-subtle); border-radius: 8px; padding: 14px 18px;">
+      <div style="font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px;">Preference When Prices Rise</div>
+      <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.7;">
+        <strong>Customer prefers:</strong> Falling Ceiling > Fixed or Lower > Fixed > Float<br>
+        <strong>Philips prefers:</strong> Float > Fixed > Fixed or Lower > Falling Ceiling
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 11. CONTRACT VERSION DRAFTING -->
+<div class="section" id="versioning">
+  <div class="section-header">
+    <span class="section-number">11</span>
+    <h2 class="section-title">Contract Version Drafting</h2>
+  </div>
+  <p style="font-size:14px; color: var(--text-secondary); margin-bottom:20px;">When contract terms need to change (e.g., a discount goes from 18% to 22%), the engine supports a draft-then-activate workflow so changes can be reviewed before going live. Rules have a 3-state lifecycle:</p>
+
+  <div style="display: flex; align-items: center; gap: 16px; justify-content: center; margin-bottom: 24px; padding: 20px; background: var(--bg-subtle); border-radius: 12px;">
+    <div style="background: var(--warning-bg); color: var(--warning); padding: 10px 20px; border-radius: 8px; font-weight: 600; text-align: center;">Draft<div style="font-size: 11px; font-weight: 400;">Invisible to pricing engine</div></div>
+    <div style="color: var(--text-muted); font-size: 20px;">&#8594;</div>
+    <div style="background: var(--success-bg); color: var(--success); padding: 10px 20px; border-radius: 8px; font-weight: 600; text-align: center;">Active<div style="font-size: 11px; font-weight: 400;">Used by pricing engine</div></div>
+    <div style="color: var(--text-muted); font-size: 20px;">&#8594;</div>
+    <div style="background: var(--bg-subtle); color: var(--text-muted); padding: 10px 20px; border-radius: 8px; font-weight: 600; text-align: center; border: 1px solid var(--border);">Expired<div style="font-size: 11px; font-weight: 400;">Replaced by new version</div></div>
+  </div>
+
+  <table>
+    <thead><tr><th>Step</th><th>What happens</th><th>Impact on live pricing</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1. Draft</strong></td><td>New rules are created with status = "draft". Multiple rule changes can be grouped into a single draft version.</td><td>None. Draft rules are invisible to the pricing engine.</td></tr>
+      <tr><td><strong>2. Compare</strong></td><td>The engine simulates all draft rules and shows before/after pricing impact across all affected hospitals and SKUs.</td><td>None. This is a read-only simulation.</td></tr>
+      <tr><td><strong>3. Activate</strong></td><td>An atomic transaction: old matching rules get expired (valid_to set to activation date - 1 day, status = "expired"), draft rules become active (valid_from = activation date, status = "active"), and the contract version number increments.</td><td>Immediate. New prices take effect from the activation date.</td></tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:16px; font-size:13px; color:var(--text-muted);">Orphaned drafts (created but never activated) remain in the database but have no effect on anything. Every rule mutation (create, update, delete, activate) is logged in the rule_audit_log table with the original natural language input for audit trail.</div>
+</div>
+
+<!-- 12. FULL FEATURE STATUS -->
+<div class="section" id="features">
+  <div class="section-header">
+    <span class="section-number">12</span>
+    <h2 class="section-title">Full Feature Status</h2>
+  </div>
+  <table class="status-table">
+    <thead><tr><th>Feature</th><th>Status</th><th>Phase</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr class="category-row"><td colspan="4">Discount Types</td></tr>
+      <tr><td>Price Float (percentage)</td><td><span class="badge badge-green">Implemented</span></td><td>POC</td><td>Default discount type</td></tr>
+      <tr><td>Price Float (fixed dollar)</td><td><span class="badge badge-green">Implemented</span></td><td>POC</td><td>amount_type = fixed_dollar. Only works with price_float, not other rule types.</td></tr>
+      <tr><td>Fixed Price</td><td><span class="badge badge-green">Implemented</span></td><td>Phase 6</td><td>Historical list price lookup with fallback to current + trace warning</td></tr>
+      <tr><td>Fixed or Lower</td><td><span class="badge badge-green">Implemented</span></td><td>Phase 6</td><td>MIN(fixed, float). No persistent state.</td></tr>
+      <tr><td>Falling Ceiling</td><td><span class="badge badge-green">Implemented</span></td><td>Phase 6</td><td>Watermark store. Ratchet-down only. Not updated during simulation.</td></tr>
+      <tr><td>Bundle / Option Discounts</td><td><span class="badge badge-green">Implemented</span></td><td>POC</td><td>fixed_amount + percentage. Two-tier parent-specific resolution.</td></tr>
+      <tr><td>Price Movement Cards</td><td><span class="badge badge-red">Excluded</span></td><td>TBD</td><td>Needs discovery session with Philips</td></tr>
+      <tr class="category-row"><td colspan="4">Resolution &amp; Search</td></tr>
+      <tr><td>Bottom-up discount search (9 levels)</td><td><span class="badge badge-green">Implemented</span></td><td>POC</td><td>SKU > BUNDLE > MPG > AG+MG3 > AG > MAG+MG3 > MAG > BU+MG3 > BU</td></tr>
+      <tr><td>BEST_PRICE resolution</td><td><span class="badge badge-green">Implemented</span></td><td>POC</td><td>Default. Lowest net wins.</td></tr>
+      <tr><td>HIERARCHY resolution</td><td><span class="badge badge-green">Implemented</span></td><td>Phase 4</td><td>Framework > IDN > GPO. Best-price tiebreaker. Toggleable.</td></tr>
+      <tr><td>Customer hierarchy entitlement</td><td><span class="badge badge-green">Implemented</span></td><td>POC</td><td>Walks Hospital > IDN > GPO to collect all contracts</td></tr>
+      <tr><td>Contract product scope validation</td><td><span class="badge badge-green">Implemented</span></td><td>POC</td><td>BU/MAG/AG/SKU/MPG scope levels per contract</td></tr>
+      <tr><td>Future-dated pricing</td><td><span class="badge badge-green">Implemented</span></td><td>POC</td><td>Rules with valid_from in the future auto-activate on that date</td></tr>
+      <tr class="category-row"><td colspan="4">Pricing Endpoints</td></tr>
+      <tr><td>Single quote (POST /pricing/quote)</td><td><span class="badge badge-green">Implemented</span></td><td>POC</td><td>Customer + SKU + date. Full 8-step resolution trace.</td></tr>
+      <tr><td>Batch quote (POST /pricing/quote/batch)</td><td><span class="badge badge-green">Implemented</span></td><td>POC</td><td>Multiple SKUs, one customer, one call</td></tr>
+      <tr><td>Order pricing (POST /pricing/quote/order)</td><td><span class="badge badge-green">Implemented</span></td><td>POC</td><td>Multi-line with quantities. Supports standalone + bundle line types. Returns line totals + order summary.</td></tr>
+      <tr><td>Pricelist generation (POST /pricing/generate)</td><td><span class="badge badge-green">Implemented</span></td><td>POC</td><td>Cross-joins all contract members x all in-scope SKUs. Produces a full pricing matrix.</td></tr>
+      <tr><td>Simulation (POST /pricing/simulate)</td><td><span class="badge badge-green">Implemented</span></td><td>Phase 4</td><td>What-if: add/modify/remove rules. Shows before/after without persisting. Does not update watermarks.</td></tr>
+      <tr class="category-row"><td colspan="4">Rule Management</td></tr>
+      <tr><td>CRUD (create, update, delete)</td><td><span class="badge badge-green">Implemented</span></td><td>POC</td><td>Full audit log on every mutation with nl_input for traceability</td></tr>
+      <tr><td>Conflict detection (5 types)</td><td><span class="badge badge-green">Implemented</span></td><td>Phase 5</td><td>date_overlap (error), cross_level_shadow (warn/info), cross_contract_undercut (warn), date_gap (info), redundant_rule (warn)</td></tr>
+      <tr><td>Pre-creation conflict check</td><td><span class="badge badge-green">Implemented</span></td><td>Phase 5</td><td>Validates candidate rule before creation, returns is_safe boolean</td></tr>
+      <tr><td>Draft contract versioning</td><td><span class="badge badge-green">Implemented</span></td><td>Phase 7</td><td>Draft > compare impact > activate atomically. 3-state lifecycle. See Section 11.</td></tr>
+      <tr><td>CSV uploads (6 entity types)</td><td><span class="badge badge-green">Implemented</span></td><td>Phase 6</td><td>Customers, products, price lists, contracts + members + scope, discount rules</td></tr>
+      <tr class="category-row"><td colspan="4">AI &amp; NLP</td></tr>
+      <tr><td>NLP rule authoring (6-step)</td><td><span class="badge badge-green">Implemented</span></td><td>Phase 5</td><td>Parse > Resolve > Validate > Preview > Present > Execute. Never skips conflict check or simulation.</td></tr>
+      <tr><td>AI chat panel</td><td><span class="badge badge-green">Implemented</span></td><td>Phase 3</td><td>Streaming SSE, 20+ tools (compute_price, simulate, compare_strategies, draft, etc.)</td></tr>
+      <tr><td>Pricing transaction logging</td><td><span class="badge badge-green">Implemented</span></td><td>POC</td><td>Full 8-step resolution trace stored per transaction for audit</td></tr>
+    </tbody>
+  </table>
+</div>
+
+</div>
+
+<div class="footer">
+  <div class="container">Philips CPQ Pricing Rules Reference v2.0 &middot; April 2026 &middot; lumif.ai</div>
+</div>
+
+</div>
+<script>
+async function sha256(msg){const e=(new TextEncoder).encode(msg),h=await crypto.subtle.digest("SHA-256",e);return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,"0")).join("")}
+async function checkPw(){const p=document.getElementById("pw-input").value;const h=await sha256(p);if(h==="0bd6161722e4b99336f09dbfedd28c8d6a7f20cb16e0199db99f3735c5fadbef"){document.getElementById("auth-gate").style.display="none";document.getElementById("doc-content").style.display="block";sessionStorage.setItem("pw-ok","1")}else{document.getElementById("pw-error").style.display="block";document.getElementById("pw-input").value="";document.getElementById("pw-input").focus()}}
+if(sessionStorage.getItem("pw-ok")==="1"){document.getElementById("auth-gate").style.display="none";document.getElementById("doc-content").style.display="block"}
+</script>
+</body>
+</html>
+
